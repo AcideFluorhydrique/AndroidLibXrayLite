@@ -68,6 +68,11 @@ jobs:
          gomobile init
          go mod tidy
          gomobile bind -v -androidapi 24 -trimpath -ldflags='-s -w -buildid= -checklinkname=0' ./
+         # What a rebuild of this release needs beyond the tagged source: the geo
+         # data resolved above, and the exact Go release setup-go picked for
+         # go.mod's `go` line. Published next to the aar.
+         { cat data/geo-assets.lock; echo "GO_VERSION='$(go env GOVERSION)'"; } > libv2ray-build.lock
+         cat libv2ray-build.lock
  
     - name: Upload build artifacts
       if: github.event.inputs.release_tag == ''
@@ -76,6 +81,7 @@ jobs:
         name: libv2ray
         path: |
           ${{ github.workspace }}/libv2ray*r
+          ${{ github.workspace }}/libv2ray-build.lock
 
     - name: Upload AndroidLibXrayLite to release
       if: github.event.inputs.release_tag != ''
@@ -84,3 +90,10 @@ jobs:
         file: ./libv2ray*r
         tag: ${{ github.event.inputs.release_tag }}
         file_glob: true
+
+    - name: Upload build lock to release
+      if: github.event.inputs.release_tag != ''
+      uses: svenstaro/upload-release-action@v2
+      with:
+        file: ./libv2ray-build.lock
+        tag: ${{ github.event.inputs.release_tag }}
