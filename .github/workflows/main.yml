@@ -73,6 +73,8 @@ jobs:
          # go.mod's `go` line. Published next to the aar.
          { cat data/geo-assets.lock; echo "GO_VERSION='$(go env GOVERSION)'"; } > libv2ray-build.lock
          cat libv2ray-build.lock
+         # Checksums of what this run built, to compare a rebuild against
+         sha256sum libv2ray*r
  
     - name: Upload build artifacts
       if: github.event.inputs.release_tag == ''
