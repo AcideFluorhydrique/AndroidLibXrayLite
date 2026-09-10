@@ -28,7 +28,10 @@ jobs:
 
     - name: Install gomobile
       run: |
-        go install golang.org/x/mobile/cmd/gomobile@latest
+        # Use the golang.org/x/mobile version go.mod already requires (tidy.yml
+        # updates it with each xray-core bump) rather than whatever @latest is
+        # at build time, so rebuilding a tag later uses the same gomobile.
+        go install golang.org/x/mobile/cmd/gomobile@$(go list -m -f '{{.Version}}' golang.org/x/mobile)
         export PATH=$PATH:~/go/bin
         
     - name: Setup Android SDK
